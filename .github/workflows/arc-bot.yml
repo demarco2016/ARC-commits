@@ -1,0 +1,35 @@
+name: ARC Points Daily Bot
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  arc-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          cd ARC-POINTS-BOT
+          npm install
+          npx playwright install chromium
+
+      - name: Run ARC Points bot
+        env:
+          ARC_EMAIL: ${{ secrets.ARC_EMAIL }}
+          ARC_PASSWORD: ${{ secrets.ARC_PASSWORD }}
+        run: cd ARC-POINTS-BOT && node bot.js
+
+      - name: Commit logs
+        run: |
+          git config user.name "demarco2016"
+          git config user.email "demarco2016@users.noreply.github.com"
+          git add ARC-POINTS-BOT/logs/
+          git commit --allow-empty -m "ARC Points bot logs $(date +%Y-%m-%d)"
+          git push

@@ -1,0 +1,13 @@
+{
+  "name": "arc-points-bot",
+  "version": "1.0.0",
+  "description": "Automated ARC Points daily tasks completer",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "playwright": "^1.52.0",
+    "dotenv": "^16.4.7"
+  }
+}
