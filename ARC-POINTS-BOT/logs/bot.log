@@ -166,3 +166,11 @@ Call log:
   - waiting for locator('input[type="email"], input[name="email"], input[placeholder*="email"]').first() to be visible
 
 [2026-06-03T12:27:36.996Z] Screenshot saved to logs/error.png
+[2026-06-04T10:52:54.424Z] Starting ARC Points bot...
+[2026-06-04T10:52:55.957Z] Navigating to community.arc.network...
+[2026-06-04T10:53:02.483Z] Attempting login...
+[2026-06-04T10:53:12.485Z] ERROR: locator.waitFor: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator('input[type="email"], input[name="email"], input[placeholder*="email"]').first() to be visible
+
+[2026-06-04T10:53:12.637Z] Screenshot saved to logs/error.png
