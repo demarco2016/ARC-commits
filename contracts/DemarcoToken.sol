@@ -9,7 +9,7 @@ contract DemarcoToken is ERC20, Ownable {
         ERC20("Demarco Token", "DMRC")
         Ownable(initialOwner)
     {
-        _mint(msg.sender, 1000000 * 10 ** decimals());
+        _mint(initialOwner, 1000000 * 10 ** decimals());
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
