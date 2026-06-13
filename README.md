@@ -31,7 +31,7 @@
 
 Automation hub for the **ARC blockchain** ecosystem. Includes daily points farming, contract deployments, and ecosystem monitoring tools.
 
-## 🤖 ARC Points Bot
+## 🤖 ARC Points Bot v2
 
 Automates daily tasks on [community.arc.network](https://community.arc.network) — ARC Architects program.
 
@@ -42,11 +42,27 @@ Automates daily tasks on [community.arc.network](https://community.arc.network) 
 | Daily login | 1 pt | ✅ |
 | **Total daily** | **27 pts** | ✅ |
 
-### Setup
+### Features
 
-1. Add `ARC_EMAIL` & `ARC_PASSWORD` secrets → repo **Settings → Secrets and variables → Actions**
+| Feature | Description |
+|---------|-------------|
+| Anti-detection | Randomized UA, viewport, human-like delays |
+| Session persistence | Reuses cookies, avoids login every run |
+| Proxy support | SOCKS5/HTTP proxy for IP rotation |
+| Point tracking | Scrapes balance before/after to verify rewards |
+| Telegram alerts | Sends daily results to your Telegram |
+| Screenshots | Captures proof on success and failure |
+
+### Setup (GitHub Actions)
+
+1. Add these **secrets** → `Settings → Secrets and variables → Actions`:
+   - `ARC_EMAIL` — your ARC community email
+   - `ARC_PASSWORD` — your ARC community password
+   - `ARC_PROXY` *(optional)* — proxy for IP rotation
+   - `TELEGRAM_BOT_TOKEN` *(optional)* — Telegram bot token
+   - `TELEGRAM_CHAT_ID` *(optional)* — your Telegram chat ID
 2. Workflow fires daily at **08:00 UTC**
-3. Monitor logs in `Actions` tab
+3. Check logs & screenshots in `Actions` tab
 
 ### Local Development
 
@@ -54,9 +70,20 @@ Automates daily tasks on [community.arc.network](https://community.arc.network) 
 cd ARC-POINTS-BOT
 npm install
 npx playwright install chromium
-# Create .env with ARC_EMAIL & ARC_PASSWORD
+# Edit .env (see .env.example)
 npm start
 ```
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ARC_EMAIL` | ✅ | ARC community email |
+| `ARC_PASSWORD` | ✅ | ARC community password |
+| `ARC_PROXY` | optional | Proxy URL `http://user:pass@ip:port` |
+| `TELEGRAM_BOT_TOKEN` | optional | Telegram bot token for alerts |
+| `TELEGRAM_CHAT_ID` | optional | Telegram chat ID |
+| `ARC_SESSION_FILE` | optional | Session file path (default: `./session.json`)
 
 ## 📜 Smart Contracts
 
