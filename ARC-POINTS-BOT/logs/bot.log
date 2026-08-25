@@ -552,3 +552,17 @@ Call log:
 [2026-08-24T08:33:12.437Z] ARC Points Bot - 2026-08-24 | Articles: 0/5 | Videos: 0/4 | Points: N/A → N/A | No errors
 [2026-08-24T08:33:12.437Z] Session completed successfully
 [2026-08-24T08:33:12.478Z] Session mt6zafti ended
+[2026-08-25T08:26:21.475Z] Session mt8ehztv started
+[2026-08-25T08:26:21.858Z] Session restored from file
+[2026-08-25T08:26:21.894Z] Navigating to community.arc.network...
+[2026-08-25T08:26:29.631Z] Already authenticated via session
+[2026-08-25T08:26:33.455Z] Points before: N/A
+[2026-08-25T08:26:36.815Z] Reading articles for points...
+[2026-08-25T08:26:40.070Z] Looking for videos...
+[2026-08-25T08:26:40.095Z] No videos found on contents page
+[2026-08-25T08:26:43.183Z] Points after: N/A
+[2026-08-25T08:26:43.218Z] Success screenshot saved
+[2026-08-25T08:26:43.223Z] Session saved for next run
+[2026-08-25T08:26:43.223Z] ARC Points Bot - 2026-08-25 | Articles: 0/5 | Videos: 0/4 | Points: N/A → N/A | No errors
+[2026-08-25T08:26:43.223Z] Session completed successfully
+[2026-08-25T08:26:43.254Z] Session mt8ehztv ended
