@@ -2,15 +2,18 @@ require('dotenv').config();
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
+const { redact, saveSession, captureScreenshot } = require('./privacy');
 
 const EMAIL = process.env.ARC_EMAIL;
 const PASSWORD = process.env.ARC_PASSWORD;
 const PROXY_URL = process.env.ARC_PROXY || '';
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
-const SESSION_FILE = process.env.ARC_SESSION_FILE || path.join(__dirname, 'session.json');
-const LOG_DIR = path.join(__dirname, 'logs');
-const SCREENSHOT_DIR = path.join(__dirname, 'screenshots');
+const SESSION_FILE = process.env.ARC_SESSION_FILE || path.join(__dirname, '.local', 'session.json');
+const LOG_DIR = path.join(__dirname, '.local', 'logs');
+const PERSIST_SESSION = process.env.ARC_PERSIST_SESSION === 'true';
+const CAPTURE_SCREENSHOTS = process.env.ARC_CAPTURE_SCREENSHOTS === 'true';
+const SCREENSHOT_DIR = path.join(__dirname, '.local', 'screenshots');
 
 if (!EMAIL || !PASSWORD) {
   console.error('Missing ARC_EMAIL or ARC_PASSWORD in .env file');
@@ -22,7 +25,7 @@ for (const dir of [LOG_DIR, SCREENSHOT_DIR]) {
 
 function log(msg) {
   const ts = new Date().toISOString();
-  const line = `[${ts}] ${msg}`;
+  const line = `[${ts}] ${redact(msg)}`;
   console.log(line);
   fs.appendFileSync(path.join(LOG_DIR, 'bot.log'), line + '\n');
 }
@@ -44,7 +47,7 @@ async function sendTelegram(msg) {
   try {
     const https = require('https');
     const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
-    const data = JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg.slice(0, 4096) });
+    const data = JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: redact(msg).slice(0, 4096) });
     await new Promise((resolve, reject) => {
       const req = https.request(url, {
         method: 'POST',
@@ -55,6 +58,7 @@ async function sendTelegram(msg) {
         res.on('end', () => body.includes('"ok":true') ? resolve() : reject(new Error(body)));
       });
       req.on('error', reject);
+      req.setTimeout(15000, () => req.destroy(new Error('Telegram request timed out')));
       req.write(data);
       req.end();
     });
@@ -107,7 +111,7 @@ async function runBot() {
     isMobile: false
   });
 
-  if (fs.existsSync(SESSION_FILE)) {
+  if (PERSIST_SESSION && fs.existsSync(SESSION_FILE)) {
     try {
       const sessionData = JSON.parse(fs.readFileSync(SESSION_FILE, 'utf-8'));
       await context.addCookies(sessionData.cookies);
@@ -158,7 +162,7 @@ async function runBot() {
       }
       log('Login successful');
     } else {
-      log('Already authenticated via session');
+      log('No login redirect; authentication and rewards are not verified');
     }
 
     await page.goto('https://community.arc.network/profile', { waitUntil: 'networkidle', timeout: 20000 });
@@ -197,7 +201,7 @@ async function runBot() {
         await page.goto(fullUrl, { waitUntil: 'networkidle', timeout: 20000 });
         await humanDelay(5000, 8000);
         summary.articles++;
-        log(`Article ${summary.articles}/5 read: ${href}`);
+        log(`Article ${summary.articles}/5 visited (not proof of reading): ${href}`);
       } catch (e) {
         log(`Article ${i+1} failed: ${e.message}`);
         summary.errors.push(`Article ${i+1}: ${e.message}`);
@@ -223,7 +227,7 @@ async function runBot() {
           try { await videoEls[i].click({ timeout: 3000 }); } catch {}
           await sleep(15000 + randomBetween(0, 5000));
           summary.videos++;
-          log(`Video ${summary.videos}/4 watched`);
+          log(`Video ${summary.videos}/4 interaction attempted (not proof of viewing)`);
         } catch (e) {
           log(`Video ${i+1} failed: ${e.message}`);
           summary.errors.push(`Video ${i+1}: ${e.message}`);
@@ -238,17 +242,17 @@ async function runBot() {
     pointsAfter = await extractPointBalance(page);
     log(`Points after: ${pointsAfter}`);
 
-    await page.screenshot({ path: path.join(SCREENSHOT_DIR, `session_${sessionId}.png`), fullPage: true });
-    log('Success screenshot saved');
+    await captureScreenshot(page, path.join(SCREENSHOT_DIR, `session_${sessionId}.png`), CAPTURE_SCREENSHOTS);
 
-    const storage = await context.storageState();
-    fs.writeFileSync(SESSION_FILE, JSON.stringify({ cookies: storage.cookies }, null, 2));
-    log('Session saved for next run');
+    if (PERSIST_SESSION) {
+      saveSession(SESSION_FILE, await context.storageState(), true);
+      log('Local session state saved; never commit or upload it');
+    }
 
     const resultMsg = [
       `ARC Points Bot - ${new Date().toISOString().slice(0, 10)}`,
-      `Articles: ${summary.articles}/5`,
-      `Videos: ${summary.videos}/4`,
+      `Article navigation attempts: ${summary.articles}/5`,
+      `Video interaction attempts: ${summary.videos}/4`,
       `Points: ${pointsBefore} → ${pointsAfter}`,
       summary.errors.length > 0 ? `Errors: ${summary.errors.length}` : 'No errors'
     ].join('\n');
@@ -259,7 +263,7 @@ async function runBot() {
   } catch (error) {
     const errMsg = `FATAL: ${error.message}`;
     log(errMsg);
-    try { await page.screenshot({ path: path.join(SCREENSHOT_DIR, `error_${sessionId}.png`), fullPage: true }); } catch {}
+    try { await captureScreenshot(page, path.join(SCREENSHOT_DIR, `error_${sessionId}.png`), CAPTURE_SCREENSHOTS); } catch {}
     await sendTelegram(`ARC Bot Failed\n${error.message}`);
     throw error;
   } finally {
@@ -269,6 +273,6 @@ async function runBot() {
 }
 
 runBot().catch(e => {
-  console.error(e.message);
+  console.error(redact(e.message));
   process.exit(1);
 });
