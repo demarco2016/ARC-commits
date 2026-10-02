@@ -1,115 +1,54 @@
-```text
-                          █████╗ ██████╗  ██████╗
-                         ██╔══██╗██╔══██╗██╔════╝
-                         ███████║██████╔╝██║
-                         ██╔══██║██╔══██╗██║
-                         ██║  ██║██║  ██║╚██████╗
-                         ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝
-```
+# ARC Community Helper (Legacy)
 
-<p align="center">
-  <b>ARC Ecosystem Contribution Hub</b><br>
-  <sub>Stablecoin-native blockchain by Circle — USDC as gas</sub>
-</p>
+This repository contains a legacy Playwright community-navigation script. Visiting
+links or interacting with a player does not prove reading, viewing, genuine
+engagement, reward credit, or airdrop eligibility. No fixed daily points are promised.
+Use only where the service permits the intended automation.
 
-<p align="center">
-  <img src="https://img.shields.io/github/stars/demarco2016/ARC-commits?style=for-the-badge&color=blueviolet">
-  <img src="https://img.shields.io/github/last-commit/demarco2016/ARC-commits?style=for-the-badge&color=blueviolet">
-  <img src="https://img.shields.io/badge/ARC-Testnet-6A0DAD?style=for-the-badge">
-  <img src="https://img.shields.io/badge/Chain_ID-5042002-6A0DAD?style=for-the-badge">
-  <br>
-  <img src="https://img.shields.io/badge/Stack-Solidity-363636?style=flat&logo=solidity">
-  <img src="https://img.shields.io/badge/Stack-Node.js-339933?style=flat&logo=nodedotjs">
-  <img src="https://img.shields.io/badge/Stack-Playwright-45ba4b?style=flat&logo=playwright">
-  <img src="https://img.shields.io/badge/Stack-GitHub_Actions-2088FF?style=flat&logo=githubactions">
-  <img src="https://img.shields.io/badge/Stack-USDC-2775CA?style=flat&logo=usdc">
-</p>
+## Safe default workflow
 
----
+GitHub Actions performs local code/privacy checks only. Scheduled points runs and
+automatic commits of logs, screenshots, or browser state have been removed.
+The checks do not log in, contact Telegram, or run a browser against the community.
 
-## 📌 About
+## Local setup
 
-Automation hub for the **ARC blockchain** ecosystem. Includes daily points farming, contract deployments, and ecosystem monitoring tools.
-
-## 🤖 ARC Points Bot v2
-
-Automates daily tasks on [community.arc.network](https://community.arc.network) — ARC Architects program.
-
-| Task | Points | Automation |
-|------|--------|-----------|
-| Read 5 articles | 10 pts | ✅ |
-| Watch 4 videos | 16 pts | ✅ |
-| Daily login | 1 pt | ✅ |
-| **Total daily** | **27 pts** | ✅ |
-
-### Features
-
-| Feature | Description |
-|---------|-------------|
-| Anti-detection | Randomized UA, viewport, human-like delays |
-| Session persistence | Reuses cookies, avoids login every run |
-| Proxy support | SOCKS5/HTTP proxy for IP rotation |
-| Point tracking | Scrapes balance before/after to verify rewards |
-| Telegram alerts | Sends daily results to your Telegram |
-| Screenshots | Captures proof on success and failure |
-
-### Setup (GitHub Actions)
-
-1. Add these **secrets** → `Settings → Secrets and variables → Actions`:
-   - `ARC_EMAIL` — your ARC community email
-   - `ARC_PASSWORD` — your ARC community password
-   - `ARC_PROXY` *(optional)* — proxy for IP rotation
-   - `TELEGRAM_BOT_TOKEN` *(optional)* — Telegram bot token
-   - `TELEGRAM_CHAT_ID` *(optional)* — your Telegram chat ID
-2. Workflow fires daily at **08:00 UTC**
-3. Check logs & screenshots in `Actions` tab
-
-### Local Development
+Requires Node.js 22 or newer:
 
 ```bash
 cd ARC-POINTS-BOT
 npm install
 npx playwright install chromium
-# Edit .env (see .env.example)
+cp .env.example .env
+# Configure credentials locally; then, only if you intend a live run:
 npm start
 ```
 
-### Environment Variables
+`ARC_EMAIL` and `ARC_PASSWORD` are required for a live run. Proxy and Telegram
+settings are optional. Keep credentials out of Git and issue comments.
+A live run may navigate community pages and send Telegram messages if configured;
+these operations are not part of the tests.
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `ARC_EMAIL` | ✅ | ARC community email |
-| `ARC_PASSWORD` | ✅ | ARC community password |
-| `ARC_PROXY` | optional | Proxy URL `http://user:pass@ip:port` |
-| `TELEGRAM_BOT_TOKEN` | optional | Telegram bot token for alerts |
-| `TELEGRAM_CHAT_ID` | optional | Telegram chat ID |
-| `ARC_SESSION_FILE` | optional | Session file path (default: `./session.json`)
+## Browser-state privacy
 
-## 📜 Smart Contracts
+Session persistence and screenshots are disabled by default. Explicit local
+opt-ins are `ARC_PERSIST_SESSION=true` and `ARC_CAPTURE_SCREENSHOTS=true`.
+Local outputs default to `ARC-POINTS-BOT/.local/`, which is ignored. Saved state
+uses file mode 0600 on systems that implement Unix file permissions. Never upload
+session state, screenshots of signed-in pages, or raw logs as public artifacts.
 
-| Contract | Network | Address |
-|----------|---------|---------|
-| DemarcoToken (DMRC) | ARC Testnet | `contracts/DemarcoToken.sol` |
+Earlier commits contain browser cookies and screenshots. Removing them from the
+current tree does not remove historical copies. Review affected sessions and
+coordinate any history cleanup separately; do not force-push without approval.
+Until this change is merged, pause the old workflow in GitHub Actions to prevent
+new automatic publication of browser state.
 
-Deploy via Remix: `https://remix.ethereum.org` with Injected Provider → ARC Testnet.
+## Verification
 
-## 🔗 Network Details
+```bash
+cd ARC-POINTS-BOT
+npm test
+```
 
-| Parameter | Value |
-|-----------|-------|
-| RPC | `https://rpc.testnet.arc.network` |
-| Chain ID | `5042002` |
-| Gas Token | USDC |
-| Explorer | [testnet.arcscan.app](https://testnet.arcscan.app) |
-| Faucet | [faucet.circle.com](https://faucet.circle.com) |
-
-## 📬 Contact
-
-- **X (Twitter)**: [@Demarco639](https://x.com/Demarco639)
-- **ARC Community**: [community.arc.network](https://community.arc.network)
-
----
-
-<p align="center">
-  <sub>Built on ARC Testnet · USDC-native · ⚡ by Demarco639</sub>
-</p>
+Tests check credential redaction and opt-in persistence/capture without credentials
+or external requests. Browser compatibility and live rewards are not verified.

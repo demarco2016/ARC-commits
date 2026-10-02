@@ -1,11 +1,11 @@
 {
   "name": "arc-points-bot",
   "version": "2.0.0",
-  "description": "ARC ecosystem daily points automation - stealth bot with Telegram alerts & proxy support",
+  "description": "Legacy community navigation helper; rewards and engagement are not verified",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js",
-    "test": "node --check bot.js"
+    "test": "node --test && node --check bot.js"
   },
   "dependencies": {
     "playwright": "^1.52.0",
